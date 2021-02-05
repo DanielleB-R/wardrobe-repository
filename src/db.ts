@@ -1,22 +1,20 @@
 import * as AWS from "aws-sdk";
-
-// AWS.config.update({
-//   region: "us-west-2",
-//   endpoint: "https://dynamodb.us-west-2.amazonaws.com",
-// });
+import * as z from "zod";
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 const TableName = "clothing-articles";
 
-export interface Article {
-  id: string;
-  title: string;
-  color: string;
-  brand: string;
-  kind: string;
-  size: string;
-  updated: string;
-}
+const articleSchema = z.object({
+  articleId: z.string(),
+  title: z.string(),
+  color: z.string(),
+  brand: z.string(),
+  kind: z.string(),
+  size: z.string(),
+  updated: z.string(),
+});
+
+export type Article = z.infer<typeof articleSchema>;
 
 interface FakeDB {
   [key: string]: Article;
@@ -24,7 +22,7 @@ interface FakeDB {
 
 const FAKE_DATABASE: FakeDB = {
   "1": {
-    id: "1",
+    articleId: "1",
     title: "Medium weight burgundy cardigan",
     color: "burgundy",
     brand: "Picadilly Fashions",
@@ -33,7 +31,7 @@ const FAKE_DATABASE: FakeDB = {
     updated: "2020-12-13T00:00:00Z",
   },
   "2": {
-    id: "2",
+    articleId: "2",
     title: "Grey heart-pattern t-shirt",
     color: "grey",
     brand: "Torrid",
@@ -57,13 +55,10 @@ export async function getArticle(id: string): Promise<Article | null> {
       },
     })
     .promise();
-  if (!queryResult.Item) {
+  if (!queryResult.Item || !articleSchema.check(queryResult.Item)) {
     return null;
   }
   console.log(JSON.stringify(queryResult));
-  return ({
-    ...queryResult.Item,
-    id: queryResult.Item.articleId,
-    articleId: undefined,
-  } as unknown) as Article;
+
+  return queryResult.Item;
 }

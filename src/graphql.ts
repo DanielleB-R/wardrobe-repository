@@ -19,7 +19,12 @@ export const Article = n.objectType({
   name: "Article",
   description: "An article of clothing",
   definition(t) {
-    t.id("id");
+    t.id("id", {
+      description: "The unique ID of the article",
+      resolve(obj) {
+        return obj.articleId;
+      },
+    });
     t.string("title");
     t.string("color");
     t.string("brand");
