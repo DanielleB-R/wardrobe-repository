@@ -1,3 +1,13 @@
+import * as AWS from "aws-sdk";
+
+// AWS.config.update({
+//   region: "us-west-2",
+//   endpoint: "https://dynamodb.us-west-2.amazonaws.com",
+// });
+
+const docClient = new AWS.DynamoDB.DocumentClient();
+const TableName = "clothing-articles";
+
 export interface Article {
   id: string;
   title: string;
@@ -33,6 +43,27 @@ const FAKE_DATABASE: FakeDB = {
   },
 };
 
-export function getArticle(id: string): Article | null {
-  return FAKE_DATABASE[id] ?? null;
+export async function getArticle(id: string): Promise<Article | null> {
+  const fakeResult = FAKE_DATABASE[id];
+  if (fakeResult) {
+    return fakeResult;
+  }
+
+  const queryResult = await docClient
+    .get({
+      TableName,
+      Key: {
+        articleId: id,
+      },
+    })
+    .promise();
+  if (!queryResult.Item) {
+    return null;
+  }
+  console.log(JSON.stringify(queryResult));
+  return ({
+    ...queryResult.Item,
+    id: queryResult.Item.articleId,
+    articleId: undefined,
+  } as unknown) as Article;
 }

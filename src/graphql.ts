@@ -35,7 +35,7 @@ export const ArticleQuery = n.queryField("article", {
   args: {
     id: n.nonNull(n.idArg()),
   },
-  resolve(_, { id }) {
+  async resolve(_, { id }) {
     return db.getArticle(id);
   },
 });
