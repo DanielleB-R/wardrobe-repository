@@ -15,14 +15,6 @@ export const ArticleKind = n.enumType({
   description: "A type of clothing article",
 });
 
-const articleDetails = (t: any) => {
-  t.string("title");
-  t.string("color");
-  t.string("brand");
-  t.field("kind", { type: ArticleKind });
-  t.string("size");
-};
-
 export const Article = n.objectType({
   name: "Article",
   description: "An article of clothing",
@@ -33,7 +25,11 @@ export const Article = n.objectType({
         return obj.articleId;
       },
     });
-    articleDetails(t);
+    t.string("title");
+    t.string("color");
+    t.string("brand");
+    t.field("kind", { type: ArticleKind });
+    t.string("size");
     t.field("updated", { type: Timestamp });
   },
 });
@@ -53,7 +49,11 @@ export const ArticleInput = n.inputObjectType({
   name: "ArticleInput",
   description: "The details of an article of clothing",
   definition(t) {
-    articleDetails(t);
+    t.nonNull.string("title");
+    t.nonNull.string("color");
+    t.nonNull.string("brand");
+    t.nonNull.field("kind", { type: ArticleKind });
+    t.nonNull.string("size");
   },
 });
 

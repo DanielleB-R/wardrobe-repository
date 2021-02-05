@@ -64,14 +64,14 @@ export async function getArticle(id: string): Promise<Article | null> {
   return queryResult.Item;
 }
 
-export async function addArticle(
-  article: Partial<Article>
-): Promise<Partial<Article>> {
+type ArticleInput = Omit<Omit<Article, "articleId">, "updated">;
+
+export async function addArticle(article: ArticleInput): Promise<Article> {
   const id = uuidv4();
   const updated = new Date().toISOString();
   const Item = {
     ...article,
-    id,
+    articleId: id,
     updated,
   };
 
