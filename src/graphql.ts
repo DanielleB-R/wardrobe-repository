@@ -15,6 +15,14 @@ export const ArticleKind = n.enumType({
   description: "A type of clothing article",
 });
 
+const articleDetails = (t: any) => {
+  t.string("title");
+  t.string("color");
+  t.string("brand");
+  t.field("kind", { type: ArticleKind });
+  t.string("size");
+};
+
 export const Article = n.objectType({
   name: "Article",
   description: "An article of clothing",
@@ -25,11 +33,7 @@ export const Article = n.objectType({
         return obj.articleId;
       },
     });
-    t.string("title");
-    t.string("color");
-    t.string("brand");
-    t.field("kind", { type: ArticleKind });
-    t.string("size");
+    articleDetails(t);
     t.field("updated", { type: Timestamp });
   },
 });
@@ -45,8 +49,32 @@ export const ArticleQuery = n.queryField("article", {
   },
 });
 
+export const ArticleInput = n.inputObjectType({
+  name: "ArticleInput",
+  description: "The details of an article of clothing",
+  definition(t) {
+    articleDetails(t);
+  },
+});
+
+export const CreateArticleMutation = n.mutationField("createArticle", {
+  type: Article,
+  description: "Add an article of clothing to the database",
+  args: {
+    article: n.nonNull(
+      n.arg({
+        type: ArticleInput,
+        description: "The details of the new article",
+      })
+    ),
+  },
+  resolve(_, { article }) {
+    return db.addArticle(article);
+  },
+});
+
 export const Schema = n.makeSchema({
-  types: [ArticleQuery],
+  types: [ArticleQuery, CreateArticleMutation],
 });
 
 const gqlHandler = graphqlHTTP({

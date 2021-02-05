@@ -1,5 +1,6 @@
 import * as AWS from "aws-sdk";
 import * as z from "zod";
+import { v4 as uuidv4 } from "uuid";
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 const TableName = "clothing-articles";
@@ -61,4 +62,25 @@ export async function getArticle(id: string): Promise<Article | null> {
   console.log(JSON.stringify(queryResult));
 
   return queryResult.Item;
+}
+
+export async function addArticle(
+  article: Partial<Article>
+): Promise<Partial<Article>> {
+  const id = uuidv4();
+  const updated = new Date().toISOString();
+  const Item = {
+    ...article,
+    id,
+    updated,
+  };
+
+  await docClient
+    .put({
+      TableName,
+      Item,
+    })
+    .promise();
+
+  return Item;
 }
