@@ -1,6 +1,8 @@
 import * as n from "nexus";
 import { graphqlHTTP } from "express-graphql";
 
+import * as db from "./db";
+
 export const Timestamp = n.scalarType({
   name: "Timestamp",
   asNexusMethod: "timestamp",
@@ -33,9 +35,8 @@ export const ArticleQuery = n.queryField("article", {
   args: {
     id: n.nonNull(n.idArg()),
   },
-  resolve() {
-    // TODO: Return something vaguely real!
-    return null;
+  resolve(_, { id }) {
+    return db.getArticle(id);
   },
 });
 
