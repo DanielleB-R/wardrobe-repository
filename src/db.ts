@@ -84,3 +84,17 @@ export async function addArticle(article: ArticleInput): Promise<Article> {
 
   return Item;
 }
+
+export async function deleteArticle(id: string): Promise<boolean> {
+  // TODO: how do I tell if I've actually deleted something?
+  await docClient
+    .delete({
+      TableName,
+      Key: {
+        articleId: id,
+      },
+    })
+    .promise();
+
+  return true;
+}

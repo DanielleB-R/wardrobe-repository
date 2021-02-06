@@ -73,8 +73,25 @@ export const CreateArticleMutation = n.mutationField("createArticle", {
   },
 });
 
+export const DeleteArticleResult = n.objectType({
+  name: "DeleteArticleResult",
+  definition(t) {
+    t.nonNull.boolean("deleted");
+  },
+});
+
+export const DeleteArticleMutation = n.mutationField("deleteArticle", {
+  type: DeleteArticleResult,
+  args: {
+    id: n.nonNull(n.idArg()),
+  },
+  async resolve(_, { id }) {
+    return { deleted: await db.deleteArticle(id) };
+  },
+});
+
 export const Schema = n.makeSchema({
-  types: [ArticleQuery, CreateArticleMutation],
+  types: [ArticleQuery, CreateArticleMutation, DeleteArticleMutation],
 });
 
 const gqlHandler = graphqlHTTP({
