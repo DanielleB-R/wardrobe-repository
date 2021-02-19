@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "package": "cd dist && rm wardrobe-repository.zip && zip -r wardrobe-repository.zip *",
+    "deploy": "aws lambda update-function-code --function-name wardrobe-repository-api --zip-file fileb://dist/wardrobe-repository.zip",
     "test": "jest"
   },
   "repository": {

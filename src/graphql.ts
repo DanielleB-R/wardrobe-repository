@@ -45,6 +45,14 @@ export const ArticleQuery = n.queryField("article", {
   },
 });
 
+export const ArticlesQuery = n.queryField("articles", {
+  type: n.list(Article),
+  description: "All of the articles in the database",
+  async resolve() {
+    return db.getArticles();
+  },
+});
+
 export const ArticleInput = n.inputObjectType({
   name: "ArticleInput",
   description: "The details of an article of clothing",
@@ -91,7 +99,12 @@ export const DeleteArticleMutation = n.mutationField("deleteArticle", {
 });
 
 export const Schema = n.makeSchema({
-  types: [ArticleQuery, CreateArticleMutation, DeleteArticleMutation],
+  types: [
+    ArticleQuery,
+    ArticlesQuery,
+    CreateArticleMutation,
+    DeleteArticleMutation,
+  ],
 });
 
 const gqlHandler = graphqlHTTP({

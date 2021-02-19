@@ -33,6 +33,21 @@ export async function getArticle(id: string): Promise<Article | null> {
   return queryResult.Item;
 }
 
+export async function getArticles(): Promise<Article[] | null> {
+  const queryResult = await docClient
+    .scan({
+      TableName,
+    })
+    .promise();
+
+  if (!queryResult.Items) {
+    return null;
+  }
+
+  // TODO: better error handling here
+  return queryResult.Items.map((item) => articleSchema.parse(item));
+}
+
 type ArticleInput = Omit<Omit<Article, "articleId">, "updated">;
 
 export async function addArticle(article: ArticleInput): Promise<Article> {
